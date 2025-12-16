@@ -1,18 +1,73 @@
 Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, System.Windows.Forms
 
 # -------------------------------
-# XAML - Interfaz gráfica
+# XAML - Interfaz grafica mejorada
 # -------------------------------
 [xml]$XAML = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Silent Installer Detector"
-        Height="420" Width="720"
+        Height="500" Width="800"
         WindowStartupLocation="CenterScreen"
         Background="#1E1E1E"
         FontFamily="Segoe UI">
 
-    <Grid Margin="20">
+    <Window.Resources>
+        <!-- Estilo para Botones -->
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#2D2D30"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                CornerRadius="8" 
+                                BorderBrush="#3E3E42" 
+                                BorderThickness="1" 
+                                Padding="15,8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#3E3E42"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#007ACC"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#007ACC"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Estilo para TextBox -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="#252526"/>
+            <Setter Property="Foreground" Value="#F1F1F1"/>
+            <Setter Property="BorderBrush" Value="#3E3E42"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="1">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="25">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -20,66 +75,85 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Título -->
+        <!-- Titulo con degradado simulado o color plano vibrante -->
         <TextBlock Text="Silent Installer Detector"
-                   FontSize="26"
+                   FontSize="32"
                    FontWeight="Bold"
-                   Foreground="#00D1FF"
-                   Margin="0,0,0,10" />
+                   Foreground="#00A1FF"
+                   Margin="0,0,0,20"
+                   HorizontalAlignment="Center">
+            <TextBlock.Effect>
+                <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="2" Opacity="0.5"/>
+            </TextBlock.Effect>
+        </TextBlock>
 
         <!-- Selector de archivo -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,15">
+        <Grid Grid.Row="1" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
             <TextBox x:Name="txtFile"
-                     Width="500"
-                     Height="30"
                      IsReadOnly="True"
-                     Background="#2D2D30"
-                     Foreground="White"
-                     BorderBrush="#3E3E42"
-                     Padding="8" />
+                     Text="Selecciona un ejecutable..." 
+                     Foreground="#AAAAAA"/>
+            
             <Button x:Name="btnBrowse"
+                    Grid.Column="1"
                     Content="Examinar"
                     Width="120"
                     Margin="10,0,0,0"
-                    Background="#007ACC"
-                    Foreground="White"
-                    FontWeight="SemiBold" />
-        </StackPanel>
+                    Background="#007ACC"/>
+        </Grid>
 
         <!-- Resultado -->
-        <GroupBox Grid.Row="2" Header="Resultado"
-                  Foreground="#00D1FF"
-                  BorderBrush="#3E3E42">
-            <TextBox x:Name="txtResult"
-                     Background="#252526"
-                     Foreground="#DCDCDC"
-                     FontSize="14"
-                     IsReadOnly="True"
-                     TextWrapping="Wrap"
-                     VerticalScrollBarVisibility="Auto"
-                     Padding="10" />
-        </GroupBox>
+        <Border Grid.Row="2" 
+                Background="#252526" 
+                CornerRadius="10" 
+                BorderBrush="#3E3E42" 
+                BorderThickness="1"
+                Padding="15">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Resultado del Analisis" 
+                           Foreground="#00D1FF" 
+                           FontWeight="SemiBold" 
+                           Margin="0,0,0,10"/>
+                <TextBox x:Name="txtResult"
+                         Grid.Row="1"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Foreground="#E1E1E1"
+                         FontSize="14"
+                         IsReadOnly="True"
+                         TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto"
+                         FontFamily="Consolas" />
+            </Grid>
+        </Border>
 
         <!-- Barra inferior -->
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
              <Button x:Name="btnAutoTest"
-                    Content="Prueba Automática"
-                    Width="140"
-                    Margin="0,0,10,0"
+                    Content="Prueba Automatica"
+                    Width="160"
                     Background="#D19A00"
                     Foreground="White"
                     Visibility="Collapsed"/>
+                    
             <Button x:Name="btnCopy"
-                    Content="Copiar comando"
-                    Width="150"
-                    Margin="0,0,10,0"
-                    Background="#3A3D41"
-                    Foreground="White" />
+                    Content="Copiar Comando"
+                    Width="160"
+                    Background="#3A3D41"/>
+                    
             <Button x:Name="btnExit"
                     Content="Salir"
                     Width="100"
-                    Background="#C74E39"
-                    Foreground="White" />
+                    Background="#C74E39"/>
         </StackPanel>
 
     </Grid>
@@ -87,8 +161,13 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, Sys
 "@
 
 # Cargamos la ventana default
-$Reader = (New-Object System.Xml.XmlNodeReader $XAML)
-$Window = [Windows.Markup.XamlReader]::Load($Reader)
+try {
+    $Reader = (New-Object System.Xml.XmlNodeReader $XAML)
+    $Window = [Windows.Markup.XamlReader]::Load($Reader)
+} catch {
+    Write-Host "Error cargando XAML: $_"
+    exit
+}
 
 # Referencias a controles
 $txtFile = $Window.FindName("txtFile")
@@ -106,17 +185,20 @@ function Detect-InstallerType {
 
     try {
         if ($PSVersionTable.PSVersion.Major -ge 6) {
-            $bytes = Get-Content $Path -AsByteStream -TotalCount 5000
+            $bytes = Get-Content $Path -AsByteStream -TotalCount 10000
         }
         else {
-            $bytes = Get-Content $Path -Encoding Byte -TotalCount 5000
+            $bytes = Get-Content $Path -Encoding Byte -TotalCount 10000
         }
         $text = [System.Text.Encoding]::ASCII.GetString($bytes)
 
+        # Patrones de deteccion
         if ($text -match "Inno Setup") { return "Inno" }
-        if ($text -match "NSIS") { return "NSIS" }
+        if ($text -match "Nullsoft Install System" -or $text -match "NSIS") { return "NSIS" }
         if ($text -match "InstallShield") { return "InstallShield" }
         if ($text -match "WiX") { return "WiX" }
+        if ($text -match "Wise") { return "Wise" }
+        if ($text -match "Advanced Installer") { return "AdvancedInstaller" }
 
         return "Unknown"
     }
@@ -137,14 +219,17 @@ function Get-SilentCommand {
         }
         ".exe" {
             $type = Detect-InstallerType $FilePath
-
+            
+            # Mapeo de tipos conocidos a argumentos
             switch ($type) {
-                "Inno" { return "`"$fileName`" /VERYSILENT /NORESTART" }
+                "Inno" { return "`"$fileName`" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-" }
                 "NSIS" { return "`"$fileName`" /S" }
                 "InstallShield" { return "`"$fileName`" /s /v`"/qn`"" }
                 "WiX" { return "`"$fileName`" /quiet /norestart" }
+                "Wise" { return "`"$fileName`" /s" }
+                "AdvancedInstaller" { return "`"$fileName`" /exenoui /qn" }
                 default {
-                    return "No se pudo detectar el instalador. Prueba manualmente con: /S, /silent, /quiet, /verysilent"
+                    return "NO_DETECTED"
                 }
             }
         }
@@ -163,18 +248,30 @@ $btnBrowse.Add_Click({
 
         if ($dialog.ShowDialog() -eq "OK") {
             $txtFile.Text = $dialog.FileName
-            $txtResult.Text = "Analizando instalador..."
+            
+            # Estilo visual para indicar carga
+            $txtResult.Foreground = "#AAAAAA"
+            $txtResult.Text = "Analizando archivo, por favor espere..."
             $btnAutoTest.Visibility = "Collapsed"
+
+            # Pequeno delay para UX
+            Start-Sleep -Milliseconds 200
 
             try {
                 $command = Get-SilentCommand $dialog.FileName
                 
-                if ($command -like "*No se pudo detectar*") {
-                    $txtResult.Text = "$command`n`nPuedes intentar la 'Prueba Automática' para buscar switches funcionales."
+                if ($command -eq "NO_DETECTED") {
+                    $txtResult.Foreground = "#FFD700" # Amarillo dorado
+                    $txtResult.Text = "No se pudo detectar la tecnologia del instalador automaticamente.`n`nSe recomienda usar la 'Prueba Automatica' para probar todos los parametros conocidos."
                     $btnAutoTest.Visibility = "Visible"
                 }
+                elseif ($command -like "Formato no*") {
+                    $txtResult.Foreground = "#FF6B6B" # Rojo suave
+                    $txtResult.Text = $command
+                }
                 else {
-                    $txtResult.Text = "Comando sugerido para instalación silenciosa:`n`n$command"
+                    $txtResult.Foreground = "#00D1FF" # Cyan brillante
+                    $txtResult.Text = "Tecnologia detectada con exito.`n`nComando sugerido:`n$command"
                 }
             }
             catch {
@@ -187,54 +284,95 @@ $btnAutoTest.Add_Click({
         $filePath = $txtFile.Text
         if (-not (Test-Path $filePath)) { return }
         
-        $switches = @("/S", "/silent", "/quiet", "/verysilent", "/qn", "/norestart", "/s", "/q")
+        # Lista expandida de argumentos posibles
+        $switches = @(
+            "/S", 
+            "/silent", 
+            "/verysilent", 
+            "/verysilent /suppressmsgboxes /norestart",
+            "/quiet", 
+            "/passive", 
+            "/qn", 
+            "/q", 
+            "-q",
+            "/s", 
+            "/exenoui",
+            "/exenoupdates",
+            "--mode unattended",
+            "/norestart"
+        )
+        
         $fileName = [System.IO.Path]::GetFileName($filePath)
         $found = $false
 
-        $txtResult.Text = "Iniciando pruebas automáticas... (Esto puede tardar un poco)`n"
+        $txtResult.Foreground = "#FFFFFF"
+        $txtResult.Text = "Iniciando pruebas automaticas...`nLa ventana puede parpadear o perder foco.`n"
 
         foreach ($sw in $switches) {
             $txtResult.Text += "`nProbando: $sw ..."
-            # Refrescar UI
             [System.Windows.Forms.Application]::DoEvents()
             
             try {
                 $proc = Start-Process -FilePath $filePath -ArgumentList $sw -PassThru
-                Start-Sleep -Seconds 3 # Esperar a que inicialice ventana si la hay
+                
+                # Esperamos un poco mas para dar tiempo al proceso de mostrar ventana si la tiene
+                Start-Sleep -Seconds 2
                 
                 if (-not $proc.HasExited) {
                     $proc.Refresh()
                     
-                    # Heurística: Si Main Window Handle es 0, probablemente es silent
+                    # Heuristica: Si Main Window Handle es 0, probablemente es silent (sin ventana grafica)
                     if ($proc.MainWindowHandle -eq 0) {
                         $proc.Kill()
-                        $txtResult.Text = "`n¡EXITO DETECTADO!`n`nEl switch '$sw' parece funcionar (el proceso corrió sin ventana).`n`nComando:`n`"$fileName`" $sw"
+                        $txtResult.Foreground = "#00FF7F" # Verde primavera
+                        $txtResult.Text = "`n!EXITO DETECTADO!`n`nEl switch '$sw' parece funcionar (el proceso corrio en segundo plano sin ventana).`n`nComando final:`n`"$fileName`" $sw"
                         $found = $true
                         break
                     }
                     else {
-                        # Abrió ventana, no es silent
+                        # Abrio ventana, no es silent
                         $proc.Kill()
-                        $txtResult.Text += " (Detectada ventana, fallo)"
+                        $txtResult.Text += " [Fallo: Ventana detectada]"
                     }
                 }
                 else {
-                    $txtResult.Text += " (Proceso terminó muy rápido)"
+                    # Si termina muy rapido puede ser crash o instalacion super rapida (o extraccion)
+                    # A veces /S retorna inmediato en wrappers. Comprobaremos ExitCode si es 0
+                    if ($proc.ExitCode -eq 0) {
+                        $txtResult.Text += " [Posible exito: Termino rapido con codigo 0]"
+                    } else {
+                        $txtResult.Text += " [Fallo: Termino inmediatamente]"
+                    }
                 }
             }
             catch {
-                $txtResult.Text += " (Error al ejecutar)"
+                $txtResult.Text += " [Error de ejecucion]"
             }
         }
 
         if (-not $found) {
-            $txtResult.Text += "`n`nFin de las pruebas. No se encontró un switch silencioso obvio."
+            $txtResult.Foreground = "#FF6B6B"
+            $txtResult.Text += "`n`nFin de las pruebas. No se encontro un switch silencioso estandar."
         }
     })
 
 $btnCopy.Add_Click({
         if ($txtResult.Text) {
+            # Extraer solo el comando si es posible, o todo el texto
+            # Por simplicidad copiamos todo y notificamos visualmente
             [System.Windows.Clipboard]::SetText($txtResult.Text)
+            $originalText = $btnCopy.Content
+            $btnCopy.Content = "Copiado!"
+            $btnCopy.Background = "#28A745"
+            
+            $timer = New-Object System.Windows.Forms.Timer
+            $timer.Interval = 2000
+            $timer.Add_Tick({
+                $btnCopy.Content = $originalText
+                $btnCopy.Background = "#3A3D41"
+                $timer.Stop()
+            })
+            $timer.Start()
         }
     })
 
